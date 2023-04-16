@@ -1,0 +1,35 @@
+
+#inline{
+  width: 100%;
+  height: auto;
+//   background-color: black;
+  display: flex;
+  align-items: center;
+}
+
+#login{
+    margin-right: 40px;
+    margin-left: 20px;
+}
+
+#stop{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+#update{
+    margin-right: 10px;
+}
+
+.one{
+  width: auto;
+  height: auto;
+//   background-color: green;
+}
+
+.two{
+//  width: 50px;
+//  height: 50px;
+//   background-color: green;
+    padding: 0px 0px 0px 10px
+}
