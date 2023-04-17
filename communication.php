@@ -105,6 +105,8 @@ function destroy_socket(){
     $param = "logout";
 
     exec("/usr/bin/python3.6 /var/www/html/Projects/Auto_Bot/Local.py 2>&1 '$param' ", $output);
+
+    echo "Web chrome session was closed.";
 }
 
 

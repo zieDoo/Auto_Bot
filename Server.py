@@ -28,11 +28,16 @@ class WebScrapper:
         self.link = link
         self.user = user
         self.password = password
+        options = webdriver.ChromeOptions()
+        options.add_argument('--headless')
+        self.driver = webdriver.Chrome(options = options)
 
-        self.driver = webdriver.Chrome()
-
-    def login(self, link, user, password, server):
+    def login(self):
         pass
+
+    def logout(self):
+        self.driver.close()
+        self.driver.quit()
 
 
 create_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -48,8 +53,9 @@ wrapper = WebScrapper(LINK, USER, PASSWORD)
 first_connection = True
 
 if first_connection:
+    #wrapper.login(LOGIN_LINK, USER, PASSWORD, SERVER)
 
-    wrapper.login(LOGIN_LINK, USER, PASSWORD, SERVER)
+    wrapper.login()
     print("First connection - Server started: ")
     first_connection = False
 
@@ -77,8 +83,10 @@ while True:
         print('show')
 
     elif a == "logout":
-        print('logout')
-        create_socket.close()
+        print('logout')        
+        wrapper.logout()
+        conn.close()
+        break
 
     else:
         pass
