@@ -3,6 +3,7 @@ import socket
 # import requests
 # from collections import Mapping
 # from collections.abc import Mapping
+from credentials import USER, PASSWORD, SERVER, LOGIN_LINK, NEXT_LINK, LOGOUT_LINK, HUNT_LINK, LINK
 from bs4 import BeautifulSoup as bs
 from selenium import webdriver
 from urllib.parse import urlparse
@@ -12,14 +13,6 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-USER = 'Lichandro'
-PASSWORD = '16pwd12*kerbATT01'
-SERVER = 's20-sk.bitefight.gameforge.com'
-LOGIN_LINK  = 'https://s20-sk.bitefight.gameforge.com/user/login'
-NEXT_LINK = 'https://s20-sk.bitefight.gameforge.com/profile/index'
-LOGOUT_LINK = 'https://s20-sk.bitefight.gameforge.com/user/logout'
-HUNT_LINK = 'https://s20-sk.bitefight.gameforge.com/robbery/index'
-LINK = "https://sk.bitefight.gameforge.com/game"
 
 
 class WebScrapper:
