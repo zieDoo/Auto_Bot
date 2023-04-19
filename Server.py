@@ -47,6 +47,39 @@ class WebScrapper:
         self.driver.quit()
 
 
+def get_info_from_infobar_table(html_content) -> dict:
+
+    full_table = html_content.find('div', {'class': 'gold'})
+    table_content_as_str = html_content.find('div', {'class': 'gold'}).text
+    formated_string = ' '.join(table_content_as_str.split()).replace(' / ', '/')
+    table_values_list = list(formated_string.split(' '))
+
+    # tags_in_list = [tags for tags in full_table.find_all('img') if tags.has_attr('alt')]
+
+    # --- LIST COMPREHENSION FOR ALT VALUES ---
+    # -----------------------------------------
+    alt_names_from_table = [tags['alt'] for tags in full_table.find_all('img', alt = True)]
+    table_ids_list = alt_names_from_table
+
+    # print(f'ALT NAMS : {alt_names_from_table} and it is type: {type(alt_names_from_table)}')
+    # print(alt_names_from_table)
+
+    # --- ALT VALUES VIA USUAL FOR LOOP ---
+    # -------------------------------------
+    # alt_names_from_table = []
+    # for tags in full_table.find_all('img', alt = True):
+    #     alt_names_from_table.append(tags['alt'])
+    # print(alt_names_from_table)
+
+
+    status_bar_dictionary = dict(zip(table_ids_list, table_values_list))
+    # print('zipped: ', status_bar_dictionary
+
+    return status_bar_dictionary
+
+
+
+
 create_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # importaaant - umozni znova otvorenie adresy.
@@ -86,9 +119,19 @@ while True:
         print('update')
 
     elif a == "show":
-        print('show')
+
+        # print('show')
         content = wrapper.get_page_content(NEXT_LINK)
-        print(content.page_source)
+
+        # print(content.page_source)
+        status_bar = get_info_from_infobar_table(content)
+
+        # print('Obsah z infobar tabulky ?', tabulka)
+        status_bar_stringed = str(status_bar)
+        status_bar_stringed_encoded = status_bar_stringed.encode("utf-8")
+        
+        # send back to local
+        conn.sendall(status_bar_stringed_encoded)        
 
     elif a == "logout":
         print('logout')        

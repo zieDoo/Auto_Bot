@@ -48,45 +48,33 @@ function get_update_new($x){
     
     if ($x == "update"){
         echo "- UPDATE -";
+        echo "<br>";
     }
     elseif ($x == "show"){
         echo "- SHOW -";
+        echo "<br>";
     }
 
-    $retval = exec("/usr/bin/python3.6 /var/www/html/Projects/Auto_Bot/Local.py '$x' ");
+    $returned_string_coded = exec("/usr/bin/python3.6 /var/www/html/Projects/Auto_Bot/Local.py '$x' ");
 
-    print_r($retval);    
+    $returned_string_decoded = base64_decode($returned_string_coded);
+    $utf8_format_string = mb_convert_encoding($returned_string_decoded, 'UTF-8');
+    print_r($utf8_format_string);    
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 function create_socket(){
     echo "- LOGIN -";
-    //$param = "login";
-
+//     $param = "login";
+//
 //     exec("/usr/bin/python3.6 /home/doozie/Pycharm\ Projects/Python\ Learning/JA\ GAME/log2.py 2>&1", $output);
 //     exec("/usr/bin/python3.6 /var/www/html/AutoBot/py_functions/login.py 2>&1 '$param' ", $output);
-    // exec("/usr/bin/python3.6 /var/www/html/bot/ServerS1.py 2>&1 '$param' ", $output);
-    // exec("/usr/bin/python3.6 /var/www/html/bot/ServerS1.py 2>&1", $output);
+//     exec("/usr/bin/python3.6 /var/www/html/bot/ServerS1.py 2>&1 '$param' ", $output);
+//     exec("/usr/bin/python3.6 /var/www/html/bot/ServerS1.py 2>&1", $output);
+
     $return_value = exec("nohup /usr/bin/python3.6 /var/www/html/Projects/Auto_Bot/Server.py > /dev/null 2>&1 &");
-    // $return_value = exec("nohup /usr/bin/python3.6 /var/www/html/bot/ServerS1.py");
+//     $return_value = exec("nohup /usr/bin/python3.6 /var/www/html/bot/ServerS1.py");
     echo "server bezi";
 
     if ($return_value == 0) {
