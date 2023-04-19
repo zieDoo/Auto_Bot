@@ -79,6 +79,43 @@ def get_info_from_infobar_table(html_content) -> dict:
 
 
 
+def get_info_from_character_table(html_content) -> dict:
+
+    character_table = html_content.find('div', {'id': 'character_tab'})
+    # print('CAR TABLE: ', character_table)
+
+    character_table_dictionary = {}
+
+    for row in character_table.find_all('tr'):
+        columns = row.find_all('td')
+        # print(columns)
+        # key, value = [col.text.strip() if col == 'Liečenie zdravia' else col == 'Akčné body Regenerácia' for col in columns]
+        key, value = [cols.text.strip() for cols in columns]
+
+        character_table_dictionary[key] = value
+
+    # print(character_table_dictionary)
+    return character_table_dictionary
+
+
+
+def get_info_from_skills_table(html_content) -> dict:
+
+    skills_table = html_content.find('div', {'id': 'skills_tab'})
+    # print('SKILLS_TAB: ', skills_table)
+
+    val1 = []
+
+    # --- Z PRVEJ TABULKY, PRE VSETKY TR, VYBER LEN PRVY TD
+
+    for ts in skills_table.select('tbody:nth-of-type(1) > tr > td:nth-of-type(1)'):
+        # print(ts.text)
+        val1.append(ts.text.replace(":", ""))
+
+    print(val1)
+
+
+
 
 create_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -122,6 +159,8 @@ while True:
 
         # print('show')
         content = wrapper.get_page_content(NEXT_LINK)
+
+        get_info_from_skills_table(content)
 
         # print(content.page_source)
         status_bar = get_info_from_infobar_table(content)
