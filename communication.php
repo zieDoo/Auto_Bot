@@ -69,14 +69,41 @@ function get_update_new($x){
     // print_r($new_final);
     // var_dump($new_final);
 
-    $bez_uvodz = str_replace(array('{', '}'), '', $new_final);
+    $bez_uvodz = str_replace(array("{", "}", "'"), '', $new_final);
 
     // print_r($bez_uvodz);
 
 
     $new_expl = explode(", ", $bez_uvodz);
 
-    print_r($new_expl);
+    // print_r($new_expl);
+
+    $pole_ID = [];
+    $pole_values = [];
+
+    foreach($new_expl as $element){
+        $el = trim($element);
+        # print_r($el);
+        // secho "<br>";
+        $el2 = explode(': ', $el);
+
+        $pole_ID[] = $el2[0];
+        $pole_values[] = trim($el2[1]);
+    }
+
+    // var_dump($pole_ID);
+    // var_dump($pole_values);
+
+
+    echo "<table>";
+    echo "<tbody>";
+
+    // foreach($pole_ID as $id and $pole_values as $value){
+    foreach(array_combine($pole_ID, $pole_values) as $id => $value){
+        echo "<tr>"."<td>".$id.":"."</td>"."<td>".$value."</td>"."</tr>";
+    }
+    echo "</tbody>";
+    echo "</table>";
 
 
     echo '</pre>';

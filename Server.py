@@ -143,6 +143,7 @@ def get_info_from_skills_table(html_content) -> dict:
     return skill_table_dictionary
     
 
+
 def merge_results(html_content) -> dict:
     
     all_tables = {}
@@ -176,13 +177,13 @@ if first_connection:
 while True:
 
     conn, addr = create_socket.accept()
-    print("Connection accepted")
+    # print("Connection accepted")
 
     data = conn.recv(1024)
-    print("Data received")
+    # print("Data received")
 
     a = data.decode('utf-8')
-    print("Data decoded")
+    # print("Data decoded")
 
     if a == "start":
         print("start")
@@ -191,7 +192,8 @@ while True:
         print("stop")
 
     elif a == "update":
-        print('update')
+        pass
+        # print('update')
 
         # conn.sendall("{'Zlato': '88.933', 'Pekelné kamene': '0', 'Úlomky': '22', 'Akčné body': '125/125', 'Energia': '23.600/23.600', 'Úroveň': '11', 'Bojová hodnota': '111'}".encode('utf-8'))
 
