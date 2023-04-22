@@ -39,11 +39,6 @@ if ($function == "login"){
 }
 
 
-
-
-
-
-
 function get_update_new($x){
     
     if ($x == "update"){
@@ -55,11 +50,37 @@ function get_update_new($x){
         echo "<br>";
     }
 
-    $returned_string_coded = exec("/usr/bin/python3.6 /var/www/html/Projects/Auto_Bot/Local.py '$x' ");
+    $output = array();
+    exec("/usr/bin/python3.6 /var/www/html/Projects/Auto_Bot/Local.py '$x' ", $output);
 
-    $returned_string_decoded = base64_decode($returned_string_coded);
-    $utf8_format_string = mb_convert_encoding($returned_string_decoded, 'UTF-8');
-    print_r($utf8_format_string);    
+    // $returned_string_coded = exec("/usr/bin/python3.6 /var/www/html/Projects/Auto_Bot/Local.py '$x' 2>&1 ");
+
+    // var_dump($output);
+
+    $result_str = implode(' ', $output);
+
+    // echo $result_str;
+    $decodujem_string = base64_decode($result_str);
+    // echo $decodujem_string;
+    $new_final = mb_convert_encoding($decodujem_string, 'UTF-8');
+    echo '<pre>';
+    // echo $new_final;
+    #var_dump($new_final);
+    // print_r($new_final);
+    // var_dump($new_final);
+
+    $bez_uvodz = str_replace(array('{', '}'), '', $new_final);
+
+    // print_r($bez_uvodz);
+
+
+    $new_expl = explode(", ", $bez_uvodz);
+
+    print_r($new_expl);
+
+
+    echo '</pre>';
+ 
 }
 
 
@@ -136,17 +157,7 @@ function get_update($x){
 
     $new_expl = explode(", ", $bez_uvodz);
 
-    // var_dump($new_expl);
-//     echo "<br>";
-//     echo "<br>";
-//     echo "<br>";
-//     echo "<br>";
-    // print_r($new_expl);
 
-//     foreach($new_expl as $result){
-//
-//         echo $result . '<br>';
-//     }
 
 
     $pole_ID = [];

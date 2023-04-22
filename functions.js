@@ -73,6 +73,8 @@ function create_buttons(set){
         //global_button.disabled = false
         // --- global_button.disabled = true;
         decision_function(set);
+        // console.log(prideme_na_to)
+        
         global_button.disabled = true;
 
 //        btn1.disabled = true;
@@ -88,7 +90,9 @@ function create_buttons(set){
         set = "show";
         console.log("POSLAL SOM SHow: ")
         // global_show_button.disabled = true;
+        // decision_function(set);
         decision_function(set);
+        
         global_show_button.disabled = true;
 
 
@@ -229,9 +233,7 @@ function send_to_local(param){
                 // clicked_button = global_show_button;
                 global_show_button.disabled = false
             }
-
             // clicked_button.disabled = false;
-
             // callback();
         }
     }, param);

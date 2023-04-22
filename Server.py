@@ -1,6 +1,7 @@
 import sys
 import socket
 import requests
+import json
 # from collections import Mapping
 # from collections.abc import Mapping
 from credentials import USER, PASSWORD, SERVER, LOGIN_LINK, NEXT_LINK, LOGOUT_LINK, HUNT_LINK, LINK
@@ -12,7 +13,6 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
 
 
 class WebScrapper:
@@ -61,6 +61,8 @@ def get_info_from_infobar_table(html_content) -> dict:
     alt_names_from_table = [tags['alt'] for tags in full_table.find_all('img', alt = True)]
     table_ids_list = alt_names_from_table
 
+    # print('TENTO: ', table_ids_list)
+
     # print(f'ALT NAMS : {alt_names_from_table} and it is type: {type(alt_names_from_table)}')
     # print(alt_names_from_table)
 
@@ -90,7 +92,7 @@ def get_info_from_character_table(html_content) -> dict:
         columns = row.find_all('td')
         # print(columns)
         # key, value = [col.text.strip() if col == 'Liečenie zdravia' else col == 'Akčné body Regenerácia' for col in columns]
-        key, value = [cols.text.strip() for cols in columns]
+        key, value = [cols.text.strip().rstrip(':') if i == 0 else cols.text.strip() for i, cols in enumerate(columns)]
 
         character_table_dictionary[key] = value
 
@@ -104,24 +106,60 @@ def get_info_from_skills_table(html_content) -> dict:
     skills_table = html_content.find('div', {'id': 'skills_tab'})
     # print('SKILLS_TAB: ', skills_table)
 
-    val1 = []
+    # ids = []
 
     # --- Z PRVEJ TABULKY, PRE VSETKY TR, VYBER LEN PRVY TD
 
-    for ts in skills_table.select('tbody:nth-of-type(1) > tr > td:nth-of-type(1)'):
-        # print(ts.text)
-        val1.append(ts.text.replace(":", ""))
+    # for ts in skills_table.select('tbody:nth-of-type(1) > tr > td:nth-of-type(1)'):
+    #     # print(ts.text)
+    #     ids.append(ts.text.replace(":", ""))
 
-    print(val1)
+    column1_cells = skills_table.select('tbody:nth-of-type(1) > tr > td:nth-of-type(1)')
+    ids = [ts.text.replace(':', '') for ts in column1_cells]
+
+    # --- OLD WAY ---
+    # ---------------
+    # values = []
+    # haleluja = skills_table.select('tbody:nth-of-type(1) > tr > td:nth-of-type(2)') 
+    #
+    # for cozase in haleluja:
+    # 
+    #     dodo = cozase.find('div')
+    #
+    #     if dodo not in cozase:
+    #         val2.append(cozase.text.strip("()"))
+    #
+    #     else:
+    #         val2.append(dodo.text.replace('\n', '').replace(" ", '').strip("()"))
 
 
+    # --- VIA LIST COMPREHENSION ---
+    # ------------------------------
+    column2_cells = skills_table.select('tbody:nth-of-type(1) > tr > td:nth-of-type(2)')
+    values = [ cell.find('div').text.replace('\n', '').replace(' ', '').strip('()') if cell.find('div') is not None else cell.text.strip('()') for cell in column2_cells]
+
+    skill_table_dictionary = dict(zip(ids, values))
+
+    return skill_table_dictionary
+    
+
+def merge_results(html_content) -> dict:
+    
+    all_tables = {}
+    all_tables.update(get_info_from_infobar_table(html_content))
+    all_tables.update(get_info_from_character_table(html_content))
+    all_tables.update(get_info_from_skills_table(html_content))
+
+    return all_tables
 
 
+# Vytvor socket pre obojstrannu komunikaciu s client scriptom
 create_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-# importaaant - umozni znova otvorenie adresy.
+# IMPORTANT - umozni znova otvorenie adresy.
 create_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
+# Adresa a port
 create_socket.bind(("localhost", 9988))
 create_socket.listen(1)
 
@@ -155,22 +193,21 @@ while True:
     elif a == "update":
         print('update')
 
+        # conn.sendall("{'Zlato': '88.933', 'Pekelné kamene': '0', 'Úlomky': '22', 'Akčné body': '125/125', 'Energia': '23.600/23.600', 'Úroveň': '11', 'Bojová hodnota': '111'}".encode('utf-8'))
+
     elif a == "show":
 
         # print('show')
         content = wrapper.get_page_content(NEXT_LINK)
 
-        get_info_from_skills_table(content)
+        all_info = merge_results(content)
+        # print(all_info)
 
-        # print(content.page_source)
-        status_bar = get_info_from_infobar_table(content)
-
-        # print('Obsah z infobar tabulky ?', tabulka)
-        status_bar_stringed = str(status_bar)
+        status_bar_stringed = str(all_info)
         status_bar_stringed_encoded = status_bar_stringed.encode("utf-8")
         
         # send back to local
-        conn.sendall(status_bar_stringed_encoded)        
+        conn.sendall(status_bar_stringed_encoded)      
 
     elif a == "logout":
         print('logout')        

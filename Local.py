@@ -14,6 +14,7 @@ new_socket.connect(("localhost", 9988))
 new_socket.sendall(input_data_decoded)
 
 received_data = b""
+# received_data = ""
 new_socket.settimeout(2)
 
 try:
@@ -28,6 +29,9 @@ except socket.timeout as sockErr:
 # print(received_data)
 # ----------------- TENTO PREC AK DOKONCIS ----------------------
 # print(received_data.decode('utf-8'))
+# received_data_str = received_data.decode('utf-8')
+# print(type(received_data_str))
+# print(received_data_str)
 # ---------------------------------------------------------------
 
 encoded_data = base64.b64encode(received_data).decode('utf-8')
