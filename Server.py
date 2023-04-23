@@ -157,6 +157,41 @@ def merge_results(html_content) -> dict:
     return all_tables
 
 
+
+def get_action_points(html_content) -> list:
+
+    all_values = get_info_from_infobar_table(html_content)
+    all_action_points = list(all_values.items())[3]
+    all_values_from_action_points = all_action_points[1]
+    splitted_action_points = all_values_from_action_points.split('/')
+    
+    actual_points = splitted_action_points[0]
+    all_points = splitted_action_points[1]
+
+    action_point_list = [actual_points, all_points]
+
+    # print(f'Info about Action Points: {int(actual_points)} a {int(all_points)}')
+    # print(action_point_list)
+    # print(type(action_point_list))
+    return action_point_list
+
+
+
+def get_character_links(html_content) -> str:
+
+    # all_links = html_content.find_element_by_css_selector('a[href="#tabs-2"]')
+    # one_links = html_content.select('a[href="#tabs-2"]')
+    # print('found all links: ', one_links)
+
+    all_training_links = html_content.select('a[href*="training"] img')
+
+    for img in all_training_links:
+        links = img.find_parent('a', href = True)
+        print('Character links: ', links['href'])
+
+
+
+
 # Vytvor socket pre obojstrannu komunikaciu s client scriptom
 create_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -195,7 +230,10 @@ while True:
         print("stop")
 
     elif a == "update":
-        pass
+        content = wrapper.get_page_content(NEXT_LINK)
+        # get_action_points(content)
+        get_character_links(content)
+        
         # print('update')
 
         # conn.sendall("{'Zlato': '88.933', 'Pekelné kamene': '0', 'Úlomky': '22', 'Akčné body': '125/125', 'Energia': '23.600/23.600', 'Úroveň': '11', 'Bojová hodnota': '111'}".encode('utf-8'))
@@ -206,7 +244,7 @@ while True:
         content = wrapper.get_page_content(NEXT_LINK)
 
         all_info = merge_results(content)
-        # print(all_info)
+        print(all_info)
 
         status_bar_stringed = str(all_info)
         status_bar_stringed_encoded = status_bar_stringed.encode("utf-8")
