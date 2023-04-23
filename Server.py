@@ -177,7 +177,7 @@ def get_action_points(html_content) -> list:
 
 
 
-def get_character_links(html_content) -> str:
+def get_character_links(html_content) -> list:
 
     # all_links = html_content.find_element_by_css_selector('a[href="#tabs-2"]')
     # one_links = html_content.select('a[href="#tabs-2"]')
@@ -185,9 +185,17 @@ def get_character_links(html_content) -> str:
 
     all_training_links = html_content.select('a[href*="training"] img')
 
-    for img in all_training_links:
-        links = img.find_parent('a', href = True)
-        print('Character links: ', links['href'])
+    # for img in all_training_links:
+    #     links = img.find_parent('a', href = True)
+    #     print('Character links: ', links['href'])
+
+    # Vylistovanie linkov pre character
+
+    traning_links = [ img.find_parent('a', href = True)['href'] for img in all_training_links]
+    # print(traning_links)
+    # print(*traning_links, sep = '\n')
+
+    return traning_links
 
 
 
@@ -231,6 +239,7 @@ while True:
 
     elif a == "update":
         content = wrapper.get_page_content(NEXT_LINK)
+
         # get_action_points(content)
         get_character_links(content)
         
@@ -244,7 +253,7 @@ while True:
         content = wrapper.get_page_content(NEXT_LINK)
 
         all_info = merge_results(content)
-        print(all_info)
+        # print(all_info)
 
         status_bar_stringed = str(all_info)
         status_bar_stringed_encoded = status_bar_stringed.encode("utf-8")
