@@ -86,7 +86,7 @@ def get_info_from_character_table(html_content) -> dict:
     character_table = html_content.find('div', {'id': 'character_tab'})
     # print('CAR TABLE: ', character_table)
 
-    character_table_dictionary = {}
+    character_full_table_dictionary = {}
 
     for row in character_table.find_all('tr'):
         columns = row.find_all('td')
@@ -94,11 +94,14 @@ def get_info_from_character_table(html_content) -> dict:
         # key, value = [col.text.strip() if col == 'Liečenie zdravia' else col == 'Akčné body Regenerácia' for col in columns]
         key, value = [cols.text.strip().rstrip(':') if i == 0 else cols.text.strip() for i, cols in enumerate(columns)]
 
-        character_table_dictionary[key] = value
+        character_full_table_dictionary[key] = value
 
-    # print(character_table_dictionary)
+    # Odstranime meniace sa hodnoty zo slovnika - ostavajuci cas liecenia a regeneracia zivotov.
+    character_table_dictionary = {key: value for i, (key, value) in enumerate(character_full_table_dictionary.items()) if i <= 6}
+
+    # print(character_full_table_dictionary)
     return character_table_dictionary
-
+    
 
 
 def get_info_from_skills_table(html_content) -> dict:
