@@ -19,7 +19,7 @@ class WebScrapper:
 
     def __init__(self):        
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
+        # options.add_argument('--headless')
         self.driver = webdriver.Chrome(options = options)
 
     def login(self, user, link, password):
@@ -41,6 +41,15 @@ class WebScrapper:
         soup = bs(page_source, 'html5lib')
         # print('Polievka', soup)
         return soup
+
+    def click_on_element(self, xpath):
+        element = self.driver.find_element_by_xpath(xpath)
+        element.click()
+        # return self.driver.page_source
+        web_content = self.driver.page_source
+        soup = bs(web_content, 'html5lib')
+        return soup
+
 
     def logout(self):
         self.driver.close()
@@ -199,6 +208,22 @@ def get_character_links(html_content) -> list:
 
 
 
+def get_hunting_links(html_content) -> list:
+    
+    # Cez selenium
+
+    # all_hunting_links = html_content.find('button', {'onclick': 'doHunt(1)', 'class': 'btn'})
+    # all_hunting_links = html_content.find_all('button', onclick=lambda value: value and 'doHunt' in value)
+    
+    all_hunting_links = html_content.find_all('button', onclick=lambda value: value and 'doHunt' in value)
+
+    print(*all_hunting_links, sep = '\n')
+    # print('\n')
+    # print(all_hunting_links[0])
+
+
+
+
 
 # Vytvor socket pre obojstrannu komunikaciu s client scriptom
 create_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -238,10 +263,40 @@ while True:
         print("stop")
 
     elif a == "update":
-        content = wrapper.get_page_content(NEXT_LINK)
+        # content = wrapper.get_page_content(NEXT_LINK)
+        # content = wrapper.get_page_content(HUNT_LINK)
 
         # get_action_points(content)
-        get_character_links(content)
+        # get_character_links(content)
+        
+        # Mozno bude treba re-factor
+        # get_hunting_links(content)
+
+        xpath = "//a[contains(@href, 'robbery')]"
+        navigate_to = wrapper.click_on_element(xpath)
+        get_hunting_links(navigate_to)
+
+        all_links = navigate_to.find_all('button')
+
+        print('ALL LINKS: ', all_links)
+
+        desired_button = []
+        for element in all_links:
+            if 'onclick' in element.attrs and 'doHunt' in element['onclick']:
+                desired_button.append(element)
+
+        print('Desired Buttons: ', desired_button)
+
+        print('CLICKOL som? ::: ', desired_button[0].click())
+
+        # print(navigate_to)
+
+        
+
+        # get_hunting_links()
+
+        # wrapper.click_on_element
+
         
         # print('update')
 
