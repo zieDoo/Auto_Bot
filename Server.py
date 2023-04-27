@@ -1,3 +1,4 @@
+import re
 import sys
 import socket
 import requests
@@ -18,11 +19,13 @@ from selenium.webdriver.support import expected_conditions as EC
 class WebScrapper:
 
     def __init__(self):        
+
         options = webdriver.ChromeOptions()
         # options.add_argument('--headless')
         self.driver = webdriver.Chrome(options = options)
 
     def login(self, user, link, password):
+
         self.user = user     
         self.password = password
         self.driver.get(link)
@@ -36,22 +39,52 @@ class WebScrapper:
         # return self.driver.page_source
 
     def get_page_content(self, current_page):
+
         self.driver.get(current_page)
         page_source = self.driver.page_source
         soup = bs(page_source, 'html5lib')
         # print('Polievka', soup)
         return soup
 
-    def click_on_element(self, xpath):
-        element = self.driver.find_element_by_xpath(xpath)
+    # def click_on_element(self, xpath):
+    #     element = self.driver.find_element_by_xpath(xpath)
+    #     element.click()
+    #     return self.driver.page_source
+    #     # web_content = self.driver.page_source
+    #     # soup = bs(web_content, 'html5lib')
+    #     # return soup
+
+    # def get_all_clickable_buttons(self, page_source, onclick_value):
+
+    #     # html_content = self.driver.page_source
+    #     soup = bs(page_source, 'html5lib')
+    #     pattern = re.compile(onclick_value)
+    #     button_objects = soup.find_all('button', {'onclick': pattern})
+
+    #     clickable_buttons = []
+
+    #     for button in button_objects:
+    #         clickable_buttons.append(button)
+    #     return clickable_buttons
+
+    def get_element(self, tag_name, attr_name, value): 
+        xpath_expression = f"//{tag_name}[contains(@{attr_name}, '{value}')]"
+        # element = self.driver.find_elements_by_xpath(xpath_expression)
+        element = self.driver.find_element_by_xpath(xpath_expression)
+        return element
+        # xpath = "//a[contains(@href, 'robbery')]"
+
+    def click_on_element(self, element):
         element.click()
-        # return self.driver.page_source
-        web_content = self.driver.page_source
-        soup = bs(web_content, 'html5lib')
-        return soup
+
+
+    def get_hunting_links(self, html_content):
+        all_hunting_links = html_content.find_all('button', onclick=lambda value: value and 'doHunt' in value)
+        return all_hunting_links
 
 
     def logout(self):
+
         self.driver.close()
         self.driver.quit()
 
@@ -208,7 +241,10 @@ def get_character_links(html_content) -> list:
 
 
 
-def get_hunting_links(html_content) -> list:
+def Pokusna_get_hunting_links(html_content) -> list:
+
+    print(type(html_content))
+
     
     # Cez selenium
 
@@ -217,9 +253,14 @@ def get_hunting_links(html_content) -> list:
     
     all_hunting_links = html_content.find_all('button', onclick=lambda value: value and 'doHunt' in value)
 
-    print(*all_hunting_links, sep = '\n')
+    hunt_links = [link.get('href') for link in all_hunting_links]
+
+    print(*map(type, hunt_links), sep = '\n')
+    print(*hunt_links, sep='\n')
+
     # print('\n')
     # print(all_hunting_links[0])
+    return all_hunting_links
 
 
 
@@ -272,22 +313,132 @@ while True:
         # Mozno bude treba re-factor
         # get_hunting_links(content)
 
-        xpath = "//a[contains(@href, 'robbery')]"
-        navigate_to = wrapper.click_on_element(xpath)
-        get_hunting_links(navigate_to)
 
-        all_links = navigate_to.find_all('button')
 
-        print('ALL LINKS: ', all_links)
 
-        desired_button = []
-        for element in all_links:
-            if 'onclick' in element.attrs and 'doHunt' in element['onclick']:
-                desired_button.append(element)
+        # new_soup = wrapper.get_page_content(HUNT_LINK)
+        
+        # hunt_links = wrapper.get_hunting_links(new_soup)
 
-        print('Desired Buttons: ', desired_button)
 
-        print('CLICKOL som? ::: ', desired_button[0].click())
+
+        # first_hunting_link = hunt_links[0]
+
+        # print(type(first_hunting_link))
+
+        # soup_after_click = wrapper.click_on_element(first_hunting_link)
+
+        # print(soup_after_click)
+
+        find_element = wrapper.get_element('a', 'href', 'robbery')
+
+        print(find_element)
+
+        wrapper.click_on_element(find_element)
+
+        # find_element.click()
+
+        find_buttons = wrapper.get_element('button', 'onclick', 'doHunt(1)')
+
+        print(find_buttons)
+        wrapper.click_on_element(find_buttons)
+
+
+
+
+
+
+
+
+
+        # xpath = "//a[contains(@href, 'robbery')]"
+        # navigate_to = wrapper.click_on_element(xpath)
+
+        # onclick_value = "doHunt"
+
+        # get_buttons_for_hunt = wrapper.get_all_clickable_buttons(navigate_to, onclick_value)
+
+        # get_buttons_for_hunt[0].click()
+
+        # print(get_buttons_for_hunt[0])
+        # print(type(get_buttons_for_hunt[0]))
+
+        # if get_buttons_for_hunt:
+        #     get_buttons_for_hunt[0].click()
+        # else:
+        #     print('No buttons found')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # xpath = "//a[contains(@href, 'robbery')]"
+        # navigate_to = wrapper.click_on_element(xpath)
+        # all_hunting_links = get_hunting_links(navigate_to)
+
+        # print('ALL HTN LI: ', all_hunting_links)
+
+        # if all_hunting_links:
+        #     first_hunting_link = all_hunting_links[0]
+            
+
+        #     print('PRVY LINCIK: ', first_hunting_link)
+        #     print('ATTTRRRSS: ', first_hunting_link.attrs)
+
+        #     wrapper.click_on_element(first_hunting_link['href'])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # all_links = navigate_to.find_all('button')
+
+        # print('ALL LINKS: ', all_links)
+
+        # desired_button = []
+        # for element in all_links:
+        #     if 'onclick' in element.attrs and 'doHunt' in element['onclick']:
+        #         desired_button.append(element)
+
+        # print('Desired Buttons: ', desired_button)
+
+        # print('CLICKOL som? ::: ', desired_button[0].click())
+
+
+
+
+
+
+
+
+
+
+
 
         # print(navigate_to)
 
