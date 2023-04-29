@@ -1,5 +1,6 @@
 import re
 import sys
+import time
 import socket
 import requests
 import json
@@ -21,6 +22,8 @@ class WebScrapper:
     def __init__(self):        
 
         options = webdriver.ChromeOptions()
+
+        # Nasledujucu option musis zapnut pre fungovanie cez stranku
         # options.add_argument('--headless')
         self.driver = webdriver.Chrome(options = options)
 
@@ -67,11 +70,11 @@ class WebScrapper:
     #         clickable_buttons.append(button)
     #     return clickable_buttons
 
-    def get_element(self, tag_name, attr_name, value): 
+    def get_elements(self, tag_name, attr_name, value): 
         xpath_expression = f"//{tag_name}[contains(@{attr_name}, '{value}')]"
         # element = self.driver.find_elements_by_xpath(xpath_expression)
-        element = self.driver.find_element_by_xpath(xpath_expression)
-        return element
+        elements = self.driver.find_elements_by_xpath(xpath_expression)
+        return elements
         # xpath = "//a[contains(@href, 'robbery')]"
 
     def click_on_element(self, element):
@@ -208,11 +211,11 @@ def get_action_points(html_content) -> list:
     splitted_action_points = all_values_from_action_points.split('/')
     
     actual_points = splitted_action_points[0]
-    all_points = splitted_action_points[1]
+    total_points = splitted_action_points[1]
 
-    action_point_list = [actual_points, all_points]
+    action_point_list = [int(actual_points), int(total_points)]
 
-    # print(f'Info about Action Points: {int(actual_points)} a {int(all_points)}')
+    # print(f'Info about Action Points: {int(actual_points)} a {int(total_points)}')
     # print(action_point_list)
     # print(type(action_point_list))
     return action_point_list
@@ -304,8 +307,48 @@ while True:
         print("stop")
 
     elif a == "update":
+        
         # content = wrapper.get_page_content(NEXT_LINK)
         # content = wrapper.get_page_content(HUNT_LINK)
+
+        count = 0
+
+        while count < 5:
+            content = wrapper.get_page_content(NEXT_LINK)
+            actual_points, total_points = get_action_points(content)
+            # print(type(actual_points))
+            # print(type(total_points))
+
+            if actual_points > 115: 
+                print(f'stale platim: ')
+                character_tab = wrapper.get_elements('a', 'href', 'robbery')
+                wrapper.click_on_element(character_tab[0])
+                find_buttons = wrapper.get_elements('button', 'onclick', 'doHunt')
+                wrapper.click_on_element(find_buttons[0])
+
+                # submit_button = wrapper.get_elements('button', 'type', 'submit')
+
+                # wrapper.click_on_element(submit_button[0])
+
+            else:
+                print(f'reachol som limit - resp klesol som ')
+                break
+
+            count += 1
+
+            time.sleep(5)
+
+
+
+
+
+
+
+
+
+
+
+
 
         # get_action_points(content)
         # get_character_links(content)
@@ -330,18 +373,69 @@ while True:
 
         # print(soup_after_click)
 
-        find_element = wrapper.get_element('a', 'href', 'robbery')
 
-        print(find_element)
+# THIS IS OOOOKKKK   -------------------------------------------
+# THIS IS OOOOKKKK   -------------------------------------------
+# THIS IS OOOOKKKK   -------------------------------------------
 
-        wrapper.click_on_element(find_element)
 
-        # find_element.click()
 
-        find_buttons = wrapper.get_element('button', 'onclick', 'doHunt(1)')
+        # character_tab = wrapper.get_elements('a', 'href', 'robbery')
+        # print(character_tab)
+        # print(type(character_tab))
 
-        print(find_buttons)
-        wrapper.click_on_element(find_buttons)
+        # wrapper.click_on_element(character_tab[0])
+
+        # find_buttons = wrapper.get_elements('button', 'onclick', 'doHunt')
+
+        # print(find_buttons)
+        # print(type(find_buttons))
+
+        # wrapper.click_on_element(find_buttons[0])
+
+        # submit_button = wrapper.get_elements('button', 'type', 'submit')
+
+        # wrapper.click_on_element(submit_button[0])
+
+
+# THIS IS OOOOKKKK   -------------------------------------------
+# THIS IS OOOOKKKK   -------------------------------------------
+# THIS IS OOOOKKKK   -------------------------------------------
+
+
+
+
+
+
+# THIS IS OOOOKKKK   -------------------------------------------
+
+
+
+        # find_element = wrapper.get_element('a', 'href', 'robbery')
+
+        # print(find_element)
+
+        # wrapper.click_on_element(find_element)
+
+        # # find_element.click()
+
+        # find_buttons = wrapper.get_element('button', 'onclick', 'doHunt(1)')
+
+        # print(find_buttons)
+        # wrapper.click_on_element(find_buttons)
+
+
+# THIS IS OOOOKKKK   -------------------------------------------
+
+
+
+
+
+
+
+
+
+
 
 
 
