@@ -3,6 +3,7 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Auto Bot</title>
     <link rel="stylesheet" type="text/css" href="styles.css" />
     <script src="functions.js"></script>
 </head>
@@ -26,10 +27,10 @@
 <div id="chart"></div>
 
 <?php
-$ids = ['Data point 1', 'Data point 2', 'Data point 3', 'Data point 4', 'Data point 5'];
-$values = [10, 20, 15, 30, 25];
+// $ids = ['Data point 1', 'Data point 2', 'Data point 3', 'Data point 4', 'Data point 5'];
+// $values = [10, 20, 15, 30, 25];
 
-include 'chart.php';
+// include 'chart.php';
 ?>
 
 <!-- KONIEC GRAFIKU -->
