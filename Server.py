@@ -2,6 +2,7 @@ import re
 import sys
 import time
 import socket
+import random
 import requests
 import json
 # from collections import Mapping
@@ -49,27 +50,6 @@ class WebScrapper:
         # print('Polievka', soup)
         return soup
 
-    # def click_on_element(self, xpath):
-    #     element = self.driver.find_element_by_xpath(xpath)
-    #     element.click()
-    #     return self.driver.page_source
-    #     # web_content = self.driver.page_source
-    #     # soup = bs(web_content, 'html5lib')
-    #     # return soup
-
-    # def get_all_clickable_buttons(self, page_source, onclick_value):
-
-    #     # html_content = self.driver.page_source
-    #     soup = bs(page_source, 'html5lib')
-    #     pattern = re.compile(onclick_value)
-    #     button_objects = soup.find_all('button', {'onclick': pattern})
-
-    #     clickable_buttons = []
-
-    #     for button in button_objects:
-    #         clickable_buttons.append(button)
-    #     return clickable_buttons
-
     def get_elements(self, tag_name, attr_name, value): 
         xpath_expression = f"//{tag_name}[contains(@{attr_name}, '{value}')]"
         # element = self.driver.find_elements_by_xpath(xpath_expression)
@@ -81,9 +61,9 @@ class WebScrapper:
         element.click()
 
 
-    def get_hunting_links(self, html_content):
-        all_hunting_links = html_content.find_all('button', onclick=lambda value: value and 'doHunt' in value)
-        return all_hunting_links
+    # def get_hunting_links(self, html_content):
+    #     all_hunting_links = html_content.find_all('button', onclick=lambda value: value and 'doHunt' in value)
+    #     return all_hunting_links
 
 
     def logout(self):
@@ -121,6 +101,7 @@ def get_info_from_infobar_table(html_content) -> dict:
 
     status_bar_dictionary = dict(zip(table_ids_list, table_values_list))
     # print('zipped: ', status_bar_dictionary
+    # print(status_bar_dictionary)
 
     return status_bar_dictionary
 
@@ -222,6 +203,26 @@ def get_action_points(html_content) -> list:
 
 
 
+def get_energy(html_content) -> list:
+
+    all_energy = get_info_from_infobar_table(html_content)
+    all_energy_points = list(all_energy.items())[4]
+    all_values_from_energy_points = all_energy_points[1]
+    splitted_energy_points = all_values_from_energy_points.split('/')
+
+    actual_energy = splitted_energy_points[0]
+    total_energy = splitted_energy_points[1]
+
+    # energy_points_list = [int(actual_points), int(total_energy)]
+    energy_points_list = [int(actual_energy.replace(".", "")), int(total_energy.replace(".", ""))]
+
+    print(type(actual_energy))
+    print(type(total_energy))
+
+    return energy_points_list
+
+
+
 def get_character_links(html_content) -> list:
 
     # all_links = html_content.find_element_by_css_selector('a[href="#tabs-2"]')
@@ -244,26 +245,26 @@ def get_character_links(html_content) -> list:
 
 
 
-def Pokusna_get_hunting_links(html_content) -> list:
+# def Pokusna_get_hunting_links(html_content) -> list:
 
-    print(type(html_content))
+#     print(type(html_content))
 
     
-    # Cez selenium
+#     # Cez selenium
 
-    # all_hunting_links = html_content.find('button', {'onclick': 'doHunt(1)', 'class': 'btn'})
-    # all_hunting_links = html_content.find_all('button', onclick=lambda value: value and 'doHunt' in value)
+#     # all_hunting_links = html_content.find('button', {'onclick': 'doHunt(1)', 'class': 'btn'})
+#     # all_hunting_links = html_content.find_all('button', onclick=lambda value: value and 'doHunt' in value)
     
-    all_hunting_links = html_content.find_all('button', onclick=lambda value: value and 'doHunt' in value)
+#     all_hunting_links = html_content.find_all('button', onclick=lambda value: value and 'doHunt' in value)
 
-    hunt_links = [link.get('href') for link in all_hunting_links]
+#     hunt_links = [link.get('href') for link in all_hunting_links]
 
-    print(*map(type, hunt_links), sep = '\n')
-    print(*hunt_links, sep='\n')
+#     print(*map(type, hunt_links), sep = '\n')
+#     print(*hunt_links, sep='\n')
 
-    # print('\n')
-    # print(all_hunting_links[0])
-    return all_hunting_links
+#     # print('\n')
+#     # print(all_hunting_links[0])
+#     return all_hunting_links
 
 
 
@@ -301,7 +302,26 @@ while True:
     # print("Data decoded")
 
     if a == "start":
+        
         print("start")
+        
+        city_button = wrapper.get_elements('a', 'href', 'city')
+        wrapper.click_on_element(city_button[0])
+        
+        shop_button = wrapper.get_elements('a', 'href', 'shop')
+        wrapper.click_on_element(shop_button[0])
+
+        items = wrapper.get_elements('a', 'href', 'buy')
+
+        print(items)
+        print(type(items))
+        print(*items, sep = '\n')
+
+        wrapper.click_on_element(items[0])
+
+
+
+
 
     elif a == "stop":
         print("stop")
@@ -313,28 +333,36 @@ while True:
 
         count = 0
 
-        while count < 5:
+        # while count < 5: # a tu by mala byt infinite loopa (True)
+        while True:
+
             content = wrapper.get_page_content(NEXT_LINK)
             actual_points, total_points = get_action_points(content)
-            # print(type(actual_points))
-            # print(type(total_points))
+            actual_energy, total_energy = get_energy(content)
+            
+            # get_energy('ENERGIA: ', content)
+            print('Actual energy: ', actual_energy)
+            print('Total energy: ', total_energy)
 
-            if actual_points > 115: 
-                print(f'stale platim: ')
-                character_tab = wrapper.get_elements('a', 'href', 'robbery')
-                wrapper.click_on_element(character_tab[0])
-                find_buttons = wrapper.get_elements('button', 'onclick', 'doHunt')
-                wrapper.click_on_element(find_buttons[0])
+            if actual_points < 118 or actual_energy < 20000: # vo finale tu bude 0    
 
                 # submit_button = wrapper.get_elements('button', 'type', 'submit')
 
                 # wrapper.click_on_element(submit_button[0])
-
-            else:
-                print(f'reachol som limit - resp klesol som ')
+                print(f'reachol som limit - nemas life alebo AP ')
                 break
 
-            count += 1
+            else:
+                print(f'stale platim: ')
+
+                character_tab = wrapper.get_elements('a', 'href', 'robbery')
+                wrapper.click_on_element(character_tab[0])
+
+                find_buttons = wrapper.get_elements('button', 'onclick', 'doHunt')
+                random_hunt_location = random.randint(0, 4)
+                wrapper.click_on_element(find_buttons[random_hunt_location])
+                
+            # count += 1
 
             time.sleep(5)
 
@@ -402,150 +430,6 @@ while True:
 # THIS IS OOOOKKKK   -------------------------------------------
 # THIS IS OOOOKKKK   -------------------------------------------
 
-
-
-
-
-
-# THIS IS OOOOKKKK   -------------------------------------------
-
-
-
-        # find_element = wrapper.get_element('a', 'href', 'robbery')
-
-        # print(find_element)
-
-        # wrapper.click_on_element(find_element)
-
-        # # find_element.click()
-
-        # find_buttons = wrapper.get_element('button', 'onclick', 'doHunt(1)')
-
-        # print(find_buttons)
-        # wrapper.click_on_element(find_buttons)
-
-
-# THIS IS OOOOKKKK   -------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # xpath = "//a[contains(@href, 'robbery')]"
-        # navigate_to = wrapper.click_on_element(xpath)
-
-        # onclick_value = "doHunt"
-
-        # get_buttons_for_hunt = wrapper.get_all_clickable_buttons(navigate_to, onclick_value)
-
-        # get_buttons_for_hunt[0].click()
-
-        # print(get_buttons_for_hunt[0])
-        # print(type(get_buttons_for_hunt[0]))
-
-        # if get_buttons_for_hunt:
-        #     get_buttons_for_hunt[0].click()
-        # else:
-        #     print('No buttons found')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # xpath = "//a[contains(@href, 'robbery')]"
-        # navigate_to = wrapper.click_on_element(xpath)
-        # all_hunting_links = get_hunting_links(navigate_to)
-
-        # print('ALL HTN LI: ', all_hunting_links)
-
-        # if all_hunting_links:
-        #     first_hunting_link = all_hunting_links[0]
-            
-
-        #     print('PRVY LINCIK: ', first_hunting_link)
-        #     print('ATTTRRRSS: ', first_hunting_link.attrs)
-
-        #     wrapper.click_on_element(first_hunting_link['href'])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        # all_links = navigate_to.find_all('button')
-
-        # print('ALL LINKS: ', all_links)
-
-        # desired_button = []
-        # for element in all_links:
-        #     if 'onclick' in element.attrs and 'doHunt' in element['onclick']:
-        #         desired_button.append(element)
-
-        # print('Desired Buttons: ', desired_button)
-
-        # print('CLICKOL som? ::: ', desired_button[0].click())
-
-
-
-
-
-
-
-
-
-
-
-
-        # print(navigate_to)
-
-        
-
-        # get_hunting_links()
-
-        # wrapper.click_on_element
-
-        
-        # print('update')
-
-        # conn.sendall("{'Zlato': '88.933', 'Pekelné kamene': '0', 'Úlomky': '22', 'Akčné body': '125/125', 'Energia': '23.600/23.600', 'Úroveň': '11', 'Bojová hodnota': '111'}".encode('utf-8'))
 
     elif a == "show":
 
