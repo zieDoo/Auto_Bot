@@ -51,6 +51,7 @@ class WebScrapper:
         return soup
 
     def get_elements(self, tag_name, attr_name, value): 
+
         xpath_expression = f"//{tag_name}[contains(@{attr_name}, '{value}')]"
         # element = self.driver.find_elements_by_xpath(xpath_expression)
         elements = self.driver.find_elements_by_xpath(xpath_expression)
@@ -58,6 +59,7 @@ class WebScrapper:
         # xpath = "//a[contains(@href, 'robbery')]"
 
     def click_on_element(self, element):
+
         element.click()
 
 
@@ -313,11 +315,23 @@ while True:
 
         items = wrapper.get_elements('a', 'href', 'buy')
 
+        # ziskali sme list itemov ktore sa daju kupit
+        # ziskaj ich hodnoty: 
+
+
         print(items)
         print(type(items))
         print(*items, sep = '\n')
 
+
+        # Kup prvy item - zda sa ze prvy je najlepsi ? - overit
         wrapper.click_on_element(items[0])
+
+
+        # Treba ziskat informacie a hodnoty vlastnych itemov. 
+
+        # Nasledne porovnat hodnoty itemov v obchode s vlastnymi itemami. 
+
 
 
 
@@ -337,6 +351,7 @@ while True:
         while True:
 
             content = wrapper.get_page_content(NEXT_LINK)
+
             actual_points, total_points = get_action_points(content)
             actual_energy, total_energy = get_energy(content)
             
@@ -357,18 +372,21 @@ while True:
             else:
                 print(f'Podmienka plati - Energia alebo AP niesu nulove.')
 
-                character_tab = wrapper.get_elements('a', 'href', 'robbery')
-                wrapper.click_on_element(character_tab[0])
+                hunt_button = wrapper.get_elements('a', 'href', 'robbery')
+                wrapper.click_on_element(hunt_button[0])
 
-                find_buttons = wrapper.get_elements('button', 'onclick', 'doHunt')
-                random_hunt_location = random.randint(0, 4)
-                wrapper.click_on_element(find_buttons[random_hunt_location])
+                find_hunt_locations = wrapper.get_elements('button', 'onclick', 'doHunt')
+                random_hunt_location = random.randint(0, 2) # 0 - 4 => vsetky lokality. Pre testing len prve 3 - (0-2)
+                wrapper.click_on_element(find_hunt_locations[random_hunt_location])
                 print(f'Zautocili sme na lokalitu: {random_hunt_location}')
+
+                # Zistit ci mozeme klikat na lovenie aj z aktualnej stranky. 
                 
             # count += 1
             random_time = random.randint(5, 11)
-            time.sleep(random_time)
             print(f'Cakame nahodny cas: {random_time}')
+            time.sleep(random_time)
+            
 
 
         # get_action_points(content)
