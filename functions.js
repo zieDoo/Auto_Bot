@@ -40,7 +40,7 @@ function create_buttons(set){
         console.log("Klikol som na START BUTTON");
         clearInterval(global_var);
 //        global_var = setInterval(function(){myLoop()}, 1000);
-        global_var = setInterval(function(){decision_function(set)}, 5000);
+        global_var = setInterval(function(){decision_function(set)}, 1000);
         console.log('MY LOOP VAR: ', global_var);
     });
 

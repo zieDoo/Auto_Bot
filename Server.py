@@ -216,8 +216,8 @@ def get_energy(html_content) -> list:
     # energy_points_list = [int(actual_points), int(total_energy)]
     energy_points_list = [int(actual_energy.replace(".", "")), int(total_energy.replace(".", ""))]
 
-    print(type(actual_energy))
-    print(type(total_energy))
+    # print(type(actual_energy))
+    # print(type(total_energy))
 
     return energy_points_list
 
@@ -341,19 +341,21 @@ while True:
             actual_energy, total_energy = get_energy(content)
             
             # get_energy('ENERGIA: ', content)
-            print('Actual energy: ', actual_energy)
-            print('Total energy: ', total_energy)
+            print(f'Aktualne AP:        {actual_points}, celkove AP:      {total_points}')
+            print(f'Aktualna energia:   {actual_energy}, celkova energia: {total_energy}')
+            print('\n')
+            print(50 * '=')
 
-            if actual_points < 118 or actual_energy < 20000: # vo finale tu bude 0    
+            if actual_points < 115 or actual_energy < 20000: # vo finale tu bude 0    
 
                 # submit_button = wrapper.get_elements('button', 'type', 'submit')
 
                 # wrapper.click_on_element(submit_button[0])
-                print(f'reachol som limit - nemas life alebo AP ')
+                print(f'Nemam dostatok bodov alebo energie.')
                 break
 
             else:
-                print(f'stale platim: ')
+                print(f'Podmienka plati - Energia alebo AP niesu nulove.')
 
                 character_tab = wrapper.get_elements('a', 'href', 'robbery')
                 wrapper.click_on_element(character_tab[0])
@@ -361,21 +363,12 @@ while True:
                 find_buttons = wrapper.get_elements('button', 'onclick', 'doHunt')
                 random_hunt_location = random.randint(0, 4)
                 wrapper.click_on_element(find_buttons[random_hunt_location])
+                print(f'Zautocili sme na lokalitu: {random_hunt_location}')
                 
             # count += 1
-
-            time.sleep(5)
-
-
-
-
-
-
-
-
-
-
-
+            random_time = random.randint(5, 11)
+            time.sleep(random_time)
+            print(f'Cakame nahodny cas: {random_time}')
 
 
         # get_action_points(content)
